@@ -14,7 +14,7 @@
     </header>
 
     <main class="contenedor-principal">
-        <!-- Zona 1: Mi Perfil -->
+        <!-- Mi Perfil -->
         <section class="tarjeta">
             <h2>👤 Mi perfil</h2>
             <div id="mi-perfil-datos">
@@ -26,19 +26,19 @@
             </div>
         </section>
 
-        <!-- Zona 2: Conectar Compañero -->
+        <!-- Conectar Compañero -->
         <section class="tarjeta">
             <h2>👥 Conectar compañero</h2>
             <p>Consulta el perfil de otro estudiante usando su URL pública:</p>
             
             <div class="buscador">
-                <input type="url" id="urlCompanero" placeholder="https://compañero.../perfil.json">
+                <input type="url" id="urlCompanero" placeholder="https://tu-compañero.github.io/perfil.json">
                 <button onclick="consultarPerfil()">Consultar perfil</button>
             </div>
 
             <p id="mensaje-estado" class="estado"></p>
 
-            <!-- Resultado de la conexión -->
+            <!-- Resultado -->
             <div id="resultado-conexion" style="display: none;">
                 <hr>
                 <h3>Perfil de: <span id="nombre-companero"></span></h3>
@@ -46,7 +46,6 @@
                 <p><strong>Comida:</strong> <span id="comida-companero"></span></p>
                 <p><strong>Pasatiempo:</strong> <span id="pasatiempo-companero"></span></p>
 
-                <!-- Bloque de Compatibilidad (Mockup 2) -->
                 <div class="caja-compatibilidad">
                     <h4>Compatibilidad de gustos</h4>
                     <div class="porcentaje" id="porcentaje-texto">0%</div>
