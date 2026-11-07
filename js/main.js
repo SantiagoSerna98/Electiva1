@@ -1,4 +1,3 @@
-// Datos propios para la comparación
 var misDatos = {
     nombre: "Santiago Serna",
     musica: "Vallenato",
@@ -11,41 +10,56 @@ function consultarPerfil() {
     var mensaje = document.getElementById("mensaje-estado");
     var resultadoDiv = document.getElementById("resultado-conexion");
 
-    // Limpiar pantalla antes de consultar
     mensaje.innerText = "";
     mensaje.style.color = "black";
     resultadoDiv.style.display = "none";
 
     if (url === "") {
-        mensaje.innerText = "Por favor ingresa una URL de perfil.json válida.";
+        mensaje.innerText = "Por favor ingresa una URL válida.";
         mensaje.style.color = "red";
         return;
     }
 
     mensaje.innerText = "Cargando datos del compañero...";
 
-    // CORS Proxy para asegurar la lectura entre dominios externos
-    var urlConProxy = "https://corsproxy.io/?" + encodeURIComponent(url);
-
-    fetch(urlConProxy)
+    // Intento 1: Petición HTTP directa
+    fetch(url)
         .then(function(respuesta) {
             if (!respuesta.ok) {
-                throw new Error("No se pudo obtener el JSON del perfil");
+                throw new Error("Petición directa no disponible");
             }
             return respuesta.json();
         })
         .then(function(datosCompanero) {
-            mensaje.innerText = "¡Conexión exitosa!";
-            mensaje.style.color = "green";
-            
-            mostrarDatos(datosCompanero);
-            compararGustos(datosCompanero);
+            procesarExito(datosCompanero, mensaje);
         })
-        .catch(function(error) {
-            console.log("Error de conexión:", error);
-            mensaje.innerText = "Error: No se pudo leer el archivo JSON de esa URL.";
-            mensaje.style.color = "red";
+        .catch(function() {
+            // Intento 2: Petición por Proxy en caso de CORS o restricciones de servidor
+            var proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
+            
+            fetch(proxyUrl)
+                .then(function(respuestaProxy) {
+                    if (!respuestaProxy.ok) {
+                        throw new Error("Error en servidor proxy");
+                    }
+                    return respuestaProxy.json();
+                })
+                .then(function(datosCompaneroProxy) {
+                    procesarExito(datosCompaneroProxy, mensaje);
+                })
+                .catch(function(errorFinal) {
+                    console.log("Error final:", errorFinal);
+                    mensaje.innerText = "Error: No se pudo leer el archivo JSON de esa URL.";
+                    mensaje.style.color = "red";
+                });
         });
+}
+
+function procesarExito(datos, elementoMensaje) {
+    elementoMensaje.innerText = "¡Conexión exitosa!";
+    elementoMensaje.style.color = "#00e676";
+    mostrarDatos(datos);
+    compararGustos(datos);
 }
 
 function mostrarDatos(datos) {
@@ -59,9 +73,8 @@ function mostrarDatos(datos) {
 
 function compararGustos(datos) {
     var coincidencias = [];
-    var totalCategorias = 3; // Música, Comida, Pasatiempo
+    var totalCategorias = 3;
 
-    // Normalizar a minúsculas para comparar cadenas
     var miMusica = misDatos.musica.toLowerCase();
     var suMusica = (datos.musica || datos.música || "").toLowerCase();
 
@@ -71,9 +84,8 @@ function compararGustos(datos) {
     var miPasatiempo = misDatos.pasatiempo.toLowerCase();
     var suPasatiempo = (datos.pasatiempo || "").toLowerCase();
 
-    // Verificación categoría por categoría
     if (miMusica === suMusica && miMusica !== "") {
-        coincidencias.push("Ambos escuchan " + datos.musica);
+        coincidencias.push("Ambos escuchan " + (datos.musica || datos.música));
     }
     if (miComida === suComida && miComida !== "") {
         coincidencias.push("Ambos disfrutan " + datos.comida);
@@ -82,11 +94,9 @@ function compararGustos(datos) {
         coincidencias.push("Ambos comparten el pasatiempo: " + datos.pasatiempo);
     }
 
-    // Porcentaje de compatibilidad
     var porcentaje = Math.round((coincidencias.length / totalCategorias) * 100);
     document.getElementById("porcentaje-texto").innerText = porcentaje + "%";
 
-    // Mostrar lista visual de coincidencia
     var ul = document.getElementById("lista-coincidencias");
     ul.innerHTML = "";
 
