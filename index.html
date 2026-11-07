@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conecta U - Santiago Serna</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Conecta U 🚀</h1>
+        <p>Una aplicación para consultar y comparar perfiles de compañeros.</p>
+    </header>
+
+    <main class="contenedor-principal">
+        <!-- Zona 1: Mi Perfil -->
+        <section class="tarjeta">
+            <h2>👤 Mi perfil</h2>
+            <div id="mi-perfil-datos">
+                <p><strong>Nombre:</strong> Santiago Serna</p>
+                <p><strong>Ubicación:</strong> Barrancabermeja, Colombia</p>
+                <p><strong>Música:</strong> Vallenato</p>
+                <p><strong>Comida:</strong> Pasta Carbonara</p>
+                <p><strong>Pasatiempo:</strong> Videojuegos</p>
+            </div>
+        </section>
+
+        <!-- Zona 2: Conectar Compañero -->
+        <section class="tarjeta">
+            <h2>👥 Conectar compañero</h2>
+            <p>Consulta el perfil de otro estudiante usando su URL pública:</p>
+            
+            <div class="buscador">
+                <input type="url" id="urlCompanero" placeholder="https://compañero.../perfil.json">
+                <button onclick="consultarPerfil()">Consultar perfil</button>
+            </div>
+
+            <p id="mensaje-estado" class="estado"></p>
+
+            <!-- Resultado de la conexión -->
+            <div id="resultado-conexion" style="display: none;">
+                <hr>
+                <h3>Perfil de: <span id="nombre-companero"></span></h3>
+                <p><strong>Música:</strong> <span id="musica-companero"></span></p>
+                <p><strong>Comida:</strong> <span id="comida-companero"></span></p>
+                <p><strong>Pasatiempo:</strong> <span id="pasatiempo-companero"></span></p>
+
+                <!-- Bloque de Compatibilidad (Mockup 2) -->
+                <div class="caja-compatibilidad">
+                    <h4>Compatibilidad de gustos</h4>
+                    <div class="porcentaje" id="porcentaje-texto">0%</div>
+                    <ul id="lista-coincidencias"></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
