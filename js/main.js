@@ -22,7 +22,7 @@ function consultarPerfil() {
 
     mensaje.innerText = "Cargando datos del compañero...";
 
-    // Intento 1: Petición HTTP directa
+    // 1. Intentar petición directa HTTP (Ideal para GitHub Pages)
     fetch(url)
         .then(function(respuesta) {
             if (!respuesta.ok) {
@@ -33,8 +33,10 @@ function consultarPerfil() {
         .then(function(datosCompanero) {
             procesarExito(datosCompanero, mensaje);
         })
-        .catch(function() {
-            // Intento 2: Petición por Proxy en caso de CORS o restricciones de servidor
+        .catch(function(errorDirecto) {
+            console.log("Falló petición directa, intentando proxy...", errorDirecto);
+            
+            // 2. Si falla por CORS o bloqueo externo, intentar vía Proxy AllOrigins
             var proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
             
             fetch(proxyUrl)
