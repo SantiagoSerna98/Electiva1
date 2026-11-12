@@ -6,7 +6,7 @@ var misDatos = {
 };
 
 function consultarPerfil() {
-    var url = document.getElementById("urlCompanero").value.trim();
+    var urlInput = document.getElementById("urlCompanero").value.trim();
     var mensaje = document.getElementById("mensaje-estado");
     var resultadoDiv = document.getElementById("resultado-conexion");
 
@@ -14,19 +14,25 @@ function consultarPerfil() {
     mensaje.style.color = "black";
     resultadoDiv.style.display = "none";
 
-    if (url === "") {
+    if (urlInput === "") {
         mensaje.innerText = "Por favor ingresa una URL válida.";
         mensaje.style.color = "red";
         return;
     }
 
+    // Asegurar formato correcto de URL
+    var url = urlInput;
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        url = "https://" + url;
+    }
+
     mensaje.innerText = "Cargando datos del compañero...";
 
-    // 1. Intentar petición directa HTTP (Ideal para GitHub Pages)
+    // 1. Petición HTTP directa
     fetch(url)
         .then(function(respuesta) {
             if (!respuesta.ok) {
-                throw new Error("Petición directa no disponible");
+                throw new Error("Respuesta no OK");
             }
             return respuesta.json();
         })
@@ -34,23 +40,21 @@ function consultarPerfil() {
             procesarExito(datosCompanero, mensaje);
         })
         .catch(function(errorDirecto) {
-            console.log("Falló petición directa, intentando proxy...", errorDirecto);
+            console.log("Error en petición directa, intentando proxy...", errorDirecto);
             
-            // 2. Si falla por CORS o bloqueo externo, intentar vía Proxy AllOrigins
+            // 2. Si falla por CORS de otro servidor, intenta por Proxy
             var proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
             
             fetch(proxyUrl)
-                .then(function(respuestaProxy) {
-                    if (!respuestaProxy.ok) {
-                        throw new Error("Error en servidor proxy");
-                    }
-                    return respuestaProxy.json();
+                .then(function(respProxy) {
+                    if (!respProxy.ok) throw new Error("Proxy no disponible");
+                    return respProxy.json();
                 })
-                .then(function(datosCompaneroProxy) {
-                    procesarExito(datosCompaneroProxy, mensaje);
+                .then(function(datosProxy) {
+                    procesarExito(datosProxy, mensaje);
                 })
-                .catch(function(errorFinal) {
-                    console.log("Error final:", errorFinal);
+                .catch(function(errFinal) {
+                    console.log("Error final:", errFinal);
                     mensaje.innerText = "Error: No se pudo leer el archivo JSON de esa URL.";
                     mensaje.style.color = "red";
                 });
